@@ -50,9 +50,7 @@ function SpectralRepresentation(
     f_ny = f_s/2            # Nyquist Frequency
 
     if f_max > f_ny
-        error("⚠️ The frequency of the signal ($f_max Hz) is bigger than the Nyquist Frequency ($f_ny Hz). There is a risk for Aliasing!")
-    else
-        println("✅ No risk of Aliasing: f_signal_max = $f_max Hz ≤ f_Nyquist = $f_ny Hz")
+        @warn "The frequency of the signal ($f_max Hz) is bigger than the Nyquist Frequency ($f_ny Hz). There is a risk for Aliasing!"
     end
 
     A = sqrt.(2 * psd.p * Δω)
