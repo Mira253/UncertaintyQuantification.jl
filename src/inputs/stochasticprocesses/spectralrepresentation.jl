@@ -63,7 +63,7 @@ function SpectralRepresentation(
         Δω,
         A,
         name,
-        [Symbol("$(name)_$i") for i in 1:length(psd.ω)],
+        [Symbol("$(name)_ϕ_$i") for i in 1:length(psd.ω)],
     )
 end
 
