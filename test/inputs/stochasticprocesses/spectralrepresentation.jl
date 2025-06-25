@@ -11,6 +11,14 @@
     sd = ShinozukaDeodatis(ω, 1, 1)
     Sval = evaluate(sd)
 
+    f_max = ω_u/(2π)
+    f_s = 1/Δt
+    f_ny = f_s/2
+
+    if f_max > f_ny
+        @warn "The frequency of the signal ($f_max Hz) is bigger than the Nyquist Frequency ($f_ny Hz). There is a risk for Aliasing!"
+    end
+
     srm_obj = SpectralRepresentation(sd, t, :ShnzkSR)
     ϕ = sample(srm_obj)
     ϕ_temp = copy(ϕ)
