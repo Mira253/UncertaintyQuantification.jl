@@ -6,7 +6,7 @@ struct KLEProcess <: AbstractStochasticProcess
     eigvals::Vector{Float64}  # Eigenvaluese λ_n
     eigfuncs::Matrix{Float64}  # Eigenfunctions ξ_n(t)
     name::Symbol
-    ϕnames::Vector{Symbol}  # names of the random variables
+    ξnames::Vector{Symbol}  # names of the random variables
 end
 
 """
@@ -46,7 +46,7 @@ end
 Creates random values for the KLE random coefficients (standard normally distributed).
 """
 function sample(proc::KLEProcess, n::Integer=1)
-    return DataFrame(proc.ϕnames .=> eachcol(randn(n, length(proc.eigvals))))
+    return DataFrame(proc.ξnames .=> eachcol(randn(n, length(proc.eigvals))))
 end
 
 """
@@ -67,5 +67,5 @@ function dimensions(proc::KLEProcess)
 end
 
 function names(proc::KLEProcess)
-    return proc.ϕnames
+    return proc.ξnames
 end
