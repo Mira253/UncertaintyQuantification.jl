@@ -190,7 +190,7 @@ include("inputs/jointdistribution.jl")
 include("dynamics/psd.jl")
 include("inputs/stochasticprocesses/spectralrepresentation.jl")
 include("inputs/stochasticprocesses/models.jl")
-include("inputs/stochasticprocesses/KLEProcess.jl")
+include("inputs/stochasticprocesses/kleprocess.jl")
 
 include("models/external/solver.jl")
 include("models/external/extractor.jl")
