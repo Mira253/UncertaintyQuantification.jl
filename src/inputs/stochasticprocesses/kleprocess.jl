@@ -23,12 +23,13 @@ Constructs a KLE model for a given time discrete covariance operator.
 """
 
 function KLEProcess(cov::Function, time::Vector{Float64}, name::Symbol, num_terms::Int)
+
     N = length(time)
     K = [cov(ti, tj) for ti in time, tj in time]  # covariance matrix
     vals, vecs = eigen(Symmetric(K))  # creating of eigenvalues and eigenfunctions
 
-    eigvals = reverse(vals[1:num_terms])
-    eigfuncs = reverse(vecs[:, 1:num_terms], dims=2)
+    eigvals = reverse(vals)[1:num_terms]
+    eigfuncs = reverse(vecs, dims=2)[:, 1:num_terms]
 
     return KLEProcess(
         cov,
