@@ -8,6 +8,7 @@ using Random
 using StatsBase: fit, Histogram, corkendall
 using Test
 using UncertaintyQuantification
+using LinearAlgebra
 
 include("inputs/empiricaldistribution.jl")
 include("dynamics/psd.jl")
