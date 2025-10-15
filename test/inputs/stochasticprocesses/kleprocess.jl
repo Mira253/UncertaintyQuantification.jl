@@ -1,15 +1,15 @@
 
 @testset "Karhunen-Loève Expansion (stationary)" begin
     # --- Setup ---
-    # 1. define time steps and covariance function
+    # define time steps and covariance function
     t = collect(0:0.1:10)
     cov_stat(ti, tj) = exp(-abs(ti - tj))  # exponential covariance kernel
 
-    # 2. build KLE process with M terms
+    # build KLE process with M terms
     M = 30
     kle_stat = KLEProcess(cov_stat, t, :klestatprocess, M)
 
-    # 3. sample realizations
+    # sample realizations
     n_samples = 500
     df = sample(kle_stat, n_samples)
 
@@ -27,17 +27,19 @@
     Xmat = reduce(hcat, X)  # (length(t), n_samples)
     K_empirical = cov(Matrix(Xmat'))
 
-    # Theoretical covariance from KLE of full covariance
-    M_full = length(t)  # maximum number of eigenvalues
-    kle_full = KLEProcess(cov_stat, t, :klefull, M_full)
+    # Theoretical covariance matrix
     K_kle = kle_stat.eigfuncs * Diagonal(kle_stat.eigvals) * kle_stat.eigfuncs'
 
+    # Difference between theoretical and empirical covariance
     diff = abs.(K_empirical - K_kle)
     max_diff = maximum(diff)
 
     @test max_diff ≤ 0.4
 
-    # --- Test 3: Energy ratio (Eq. (1.11)) ---
+    # --- Test 3: Energy ratio ---
+    M_full = length(t)  # maximum number of eigenvalues
+    kle_full = KLEProcess(cov_stat, t, :klefull, M_full)
+
     total_variance = sum(kle_full.eigvals)          # sum of all eigenvalues of full KLE
     captured_variance = sum(kle_stat.eigvals)       # sum of used eigenvalues in original KLE
 
@@ -49,15 +51,15 @@ end
 
 @testset "Karhunen-Loève Expansion (non-stationary)" begin
     # --- Setup ---
-    # 1. define time steps and non-stationary covariance function
+    # define time steps and non-stationary covariance function
     t = collect(0:0.1:10)
     cov_n_stat(ti, tj) = exp(-abs(ti - tj)) * sqrt(ti * tj + 1)  # non-stationary covariance kernel
 
-    # 2. build KLE process with M terms
+    # build KLE process with M terms
     M = 30
     kle_n_stat = KLEProcess(cov_n_stat, t, :klenstatprocess, M)
 
-    # 3. sample realizations
+    # sample realizations
     n_samples = 500
     df = sample(kle_n_stat, n_samples)
 
@@ -75,17 +77,19 @@ end
     Xmat = reduce(hcat, X)  # (length(t), n_samples)
     K_n_empirical = cov(Matrix(Xmat'))
 
-    # Theoretical covariance from KLE of full covariance
-    M_full = length(t)  # maximum number of eigenvalues
-    kle_n_full = KLEProcess(cov_n_stat, t, :klenfull, M_full)
+    # Theoretical covariance matrix
     K_n_kle = kle_n_stat.eigfuncs * Diagonal(kle_n_stat.eigvals) * kle_n_stat.eigfuncs'
 
+    # Difference between theoretical and empirical covariance
     diff = abs.(K_n_empirical - K_n_kle)
     max_diff = maximum(diff)
 
     @test max_diff ≤ 4
 
-    # --- Test 3: Energy ratio (Eq. (1.11)) ---
+    # --- Test 3: Energy ratio ---
+    M_full = length(t)  # maximum number of eigenvalues
+    kle_n_full = KLEProcess(cov_n_stat, t, :klenfull, M_full)
+
     total_variance = sum(kle_n_full.eigvals)          # sum of all eigenvalues of full KLE
     captured_variance = sum(kle_n_stat.eigvals)       # sum of used eigenvalues in original KLE
 
