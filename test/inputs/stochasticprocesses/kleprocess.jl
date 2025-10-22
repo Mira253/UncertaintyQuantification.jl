@@ -1,6 +1,5 @@
 
 @testset "Karhunen-Loève Expansion (stationary)" begin
-    # --- Setup ---
     # define time steps and covariance function
     t = collect(0:0.1:10)
     cov_stat(ti, tj) = exp(-abs(ti - tj))  # exponential covariance kernel
@@ -13,7 +12,7 @@
     n_samples = 500
     df = sample(kle_stat, n_samples)
 
-    # --- Test 1: Evaluate consistency ---
+    # Test 1: Evaluate consistency
     ξ = collect(df[1, names(kle_stat)])
     x1 = evaluate(kle_stat, ξ)
     x2 = kle_stat(ξ)
@@ -21,7 +20,7 @@
     @test length(x1) == length(t)   # check correct output dimension
     @test x1 ≈ x2                   # consistency of evaluate vs. call
 
-    # --- Test 2: Covariance reproduction ---
+    # Test 2: Covariance reproduction
     # Empirical covariance from samples
     X = [evaluate(kle_stat, collect(df[i, names(kle_stat)])) for i in 1:n_samples]
     Xmat = reduce(hcat, X)  # (length(t), n_samples)
@@ -36,13 +35,14 @@
 
     @test max_diff ≤ 0.4
 
-    # --- Test 3: Energy ratio ---
+    # Test 3: Energy ratio
     M_full = length(t)  # maximum number of eigenvalues
     kle_full = KLEProcess(cov_stat, t, :klefull, M_full)
 
     total_variance = sum(kle_full.eigvals)          # sum of all eigenvalues of full KLE
     captured_variance = sum(kle_stat.eigvals)       # sum of used eigenvalues in original KLE
 
+    # formula (23) in Cho et al. (2013), "Karhunen-Loeve expansion for multi-correlated stocastic processes"
     energy_ratio = captured_variance / total_variance
 
     @test energy_ratio ≥ 0.9  # at least 90% of variance captured
@@ -50,7 +50,6 @@ end
 
 
 @testset "Karhunen-Loève Expansion (non-stationary)" begin
-    # --- Setup ---
     # define time steps and non-stationary covariance function
     t = collect(0:0.1:10)
     cov_n_stat(ti, tj) = exp(-abs(ti - tj)) * sqrt(ti * tj + 1)  # non-stationary covariance kernel
@@ -63,7 +62,7 @@ end
     n_samples = 500
     df = sample(kle_n_stat, n_samples)
 
-    # --- Test 1: Evaluate consistency ---
+    # Test 1: Evaluate consistency
     ξ = collect(df[1, names(kle_n_stat)])
     x1 = evaluate(kle_n_stat, ξ)
     x2 = kle_n_stat(ξ)
@@ -71,7 +70,7 @@ end
     @test length(x1) == length(t)   # check correct output dimension
     @test x1 ≈ x2                   # consistency of evaluate vs. call
 
-    # --- Test 2: Covariance reproduction ---
+    # Test 2: Covariance reproduction
     # Empirical covariance from samples
     X = [evaluate(kle_n_stat, collect(df[i, names(kle_n_stat)])) for i in 1:n_samples]
     Xmat = reduce(hcat, X)  # (length(t), n_samples)
@@ -86,13 +85,14 @@ end
 
     @test max_diff ≤ 4
 
-    # --- Test 3: Energy ratio ---
+    #  Test 3: Energy ratio
     M_full = length(t)  # maximum number of eigenvalues
     kle_n_full = KLEProcess(cov_n_stat, t, :klenfull, M_full)
 
     total_variance = sum(kle_n_full.eigvals)          # sum of all eigenvalues of full KLE
     captured_variance = sum(kle_n_stat.eigvals)       # sum of used eigenvalues in original KLE
 
+    # formula (23) in Cho et al. (2013), "Karhunen-Loeve expansion for multi-correlated stocastic processes"
     energy_ratio = captured_variance / total_variance
 
     @test energy_ratio ≥ 0.9  # at least 90% of variance captured
